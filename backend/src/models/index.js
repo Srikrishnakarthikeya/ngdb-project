@@ -38,9 +38,11 @@ export const CompletionReport = model('CompletionReport', CompletionReportSchema
 export const Photograph = model('Photograph', PhotographSchema, 'photographs');
 export const Notification = model('Notification', NotificationSchema, 'notifications');
 
-const UserSchema = new Schema({ userId: idString(), name: idString(), email: { type: String, required: true, unique: true, lowercase: true, trim: true }, passwordHash: idString(), role: { type: String, enum: ['STUDENT', 'ADMIN', 'COORDINATOR'], required: true }, profile: { type: Schema.Types.Mixed, default: {} } }, timestamps);
+const UserSchema = new Schema({ userId: idString(), name: idString(), email: { type: String, required: true, unique: true, lowercase: true, trim: true }, passwordHash: idString(), role: { type: String, enum: ['STUDENT', 'ADMIN', 'COORDINATOR', 'VOLUNTEER'], required: true }, profile: { type: Schema.Types.Mixed, default: {} } }, timestamps);
+const VolunteerApplicationSchema = new Schema({ applicationId: idString(), volunteerId: idString(), volunteerName: String, volunteerEmail: String, Event_ID: idString(), Status: { type: String, enum: ['Pending', 'Accepted', 'Rejected'], default: 'Pending' }, reviewedBy: String, reviewedAt: String }, timestamps);
 const WalletSchema = new Schema({ participantId: idString(), balance: { type: Number, required: true, default: 1000, min: 0 } }, timestamps);
 const WalletTopUpSchema = new Schema({ participantId: idString(), amount: { type: Number, required: true, min: 1 }, status: { type: String, enum: ['pending', 'confirmed', 'rejected', 'completed'], default: 'pending' }, expiresAt: { type: Date, required: true } }, timestamps);
 export const User = model('User', UserSchema, 'users');
 export const Wallet = model('Wallet', WalletSchema, 'wallets');
 export const WalletTopUp = model('WalletTopUp', WalletTopUpSchema, 'walletTopUps');
+export const VolunteerApplication = model('VolunteerApplication', VolunteerApplicationSchema, 'volunteerApplications');

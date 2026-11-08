@@ -11,13 +11,13 @@ const resources = {
   eventCoordinators: 'eventCoordinators', sponsors: 'sponsors', publicity: 'publicity', participants: 'participants',
   registrations: 'registrations', accommodations: 'accommodations', hospitality: 'hospitality', evaluations: 'evaluations',
   certificates: 'certificates', completionReports: 'completionReports', photographs: 'photographs', notifications: 'notifications',
-  wallets: 'wallets', users: 'users', walletTopUps: 'walletTopUps'
+  wallets: 'wallets', users: 'users', walletTopUps: 'walletTopUps', volunteerApplications: 'volunteerApplications'
 };
 const idFields = {
   departments: 'Dept_ID', venues: 'Venue_ID', coordinators: 'Coordinator_ID', events: 'Event_ID', eventCoordinators: null,
   sponsors: 'Sponsor_ID', publicity: 'Ad_ID', participants: 'Participant_ID', registrations: 'Registration_ID',
   accommodations: 'Accommodation_ID', hospitality: 'Hospitality_ID', evaluations: 'Evaluation_ID', certificates: 'Certificate_ID',
-  completionReports: 'Report_ID', photographs: 'Photo_ID', notifications: 'id', wallets: 'participantId', users: 'userId', walletTopUps: null
+  completionReports: 'Report_ID', photographs: 'Photo_ID', notifications: 'id', wallets: 'participantId', users: 'userId', walletTopUps: null, volunteerApplications: 'applicationId'
 };
 
 router.get('/bootstrap', async (_req, res, next) => {

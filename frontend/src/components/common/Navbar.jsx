@@ -15,7 +15,7 @@ import {
 } from 'lucide-react';
 
 const Navbar = () => {
-  const { currentUser, isAuthenticated, isStudent, isAdmin, isCoordinator, switchRole, logout } = useAuth();
+  const { currentUser, isAuthenticated, isStudent, isAdmin, isCoordinator, isVolunteer, switchRole, logout } = useAuth();
   const { notifications } = useData();
   const navigate = useNavigate();
 
@@ -151,7 +151,7 @@ const Navbar = () => {
                         {/* Quick Dashboard link */}
                         <div className="py-1">
                           <Link
-                            to={isStudent ? '/student/dashboard' : isCoordinator ? '/admin/coordinator-dashboard' : '/admin/dashboard'}
+                            to={isStudent ? '/student/dashboard' : isCoordinator ? '/admin/coordinator-dashboard' : isVolunteer ? '/volunteer/dashboard' : '/admin/dashboard'}
                             onClick={() => setIsRoleDropdownOpen(false)}
                             className="flex items-center gap-2 px-4 py-2 text-xs font-semibold text-nitt-900 hover:bg-slate-50"
                           >
@@ -219,6 +219,12 @@ const Navbar = () => {
                     className="px-3.5 py-1.5 text-xs font-bold text-nitt-900 hover:bg-slate-100 rounded-lg transition-colors border border-slate-300"
                   >
                     Student Login
+                  </Link>
+                  <Link
+                    to="/volunteer-login"
+                    className="px-3.5 py-1.5 text-xs font-bold text-emerald-700 hover:bg-emerald-50 rounded-lg border border-emerald-200 transition-colors"
+                  >
+                    Volunteer
                   </Link>
                   <Link
                     to="/admin-login"

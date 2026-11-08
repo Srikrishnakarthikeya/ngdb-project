@@ -17,6 +17,8 @@ import WalletTopUpConfirmationPage from './pages/public/WalletTopUpConfirmationP
 import AdminLoginPage from './pages/public/AdminLoginPage';
 import AboutPage from './pages/public/AboutPage';
 import ContactPage from './pages/public/ContactPage';
+import VolunteerLoginPage from './pages/public/VolunteerLoginPage';
+import VolunteerDashboardPage from './pages/volunteer/VolunteerDashboardPage';
 
 // Student Pages
 import StudentDashboard from './pages/student/StudentDashboard';
@@ -51,8 +53,13 @@ import ChangePasswordPage from './pages/admin/ChangePasswordPage';
 import CoordinatorDashboardPage from './pages/admin/CoordinatorDashboardPage';
 
 const ParticipantPaymentRoute = () => {
-  const { isCoordinator } = useAuth();
-  return isCoordinator ? <Navigate to="/events" replace /> : <EventPaymentPage />;
+  const { isCoordinator, isVolunteer } = useAuth();
+  return isCoordinator || isVolunteer ? <Navigate to="/events" replace /> : <EventPaymentPage />;
+};
+
+const VolunteerRoute = () => {
+  const { isVolunteer } = useAuth();
+  return isVolunteer ? <VolunteerDashboardPage /> : <Navigate to="/volunteer-login" replace />;
 };
 
 function App() {
@@ -70,6 +77,8 @@ function App() {
         <Route path="/student-login" element={<StudentLoginPage />} />
         <Route path="/wallet/confirm" element={<WalletTopUpConfirmationPage />} />
         <Route path="/admin-login" element={<AdminLoginPage />} />
+        <Route path="/volunteer-login" element={<VolunteerLoginPage />} />
+        <Route path="/volunteer/dashboard" element={<VolunteerRoute />} />
       </Route>
 
       {/* Student Portal Pages */}
