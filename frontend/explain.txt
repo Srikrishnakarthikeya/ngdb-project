@@ -1,0 +1,180 @@
+NIT TRICHY EVENT MANAGEMENT SYSTEM
+PROJECT EXPLANATION
+
+1. PROJECT OVERVIEW
+
+The Event Management System is a responsive web application prototype for organizing academic, technical, cultural, and student activities for the Department of Computer Applications at the National Institute of Technology, Tiruchirappalli (NIT Trichy).
+
+The project brings event discovery, registration, payments, accommodation, hospitality, administration, and post-event records into one interface. It has three user experiences:
+- Public visitors can browse events and view event information.
+- Students can register for events and manage their participation and services.
+- Administrators and coordinators can manage events and related operational records.
+
+The system is designed around a relational event-management model. Its data model includes departments, events, venues, coordinators, event-coordinator assignments, participants, registrations, sponsors, publicity, accommodation, hospitality, evaluations, certificates, completion reports, and photographs.
+
+2. PROJECT OBJECTIVES
+
+- Provide one place to publish and browse events.
+- Organize events into Technical, Non-Technical, and Fun Activity categories.
+- Give students a clear path from event discovery to registration and payment.
+- Support hostel requests, room assignment, hospitality, certificates, feedback, and event galleries.
+- Give administrators a dashboard for operational management and analytics.
+- Demonstrate how an event-management application can reflect relational entities and their connections.
+
+3. USER ROLES AND MODULES
+
+PUBLIC VISITOR
+- Views the home page, event listings, event details, public gallery, About page, and Contact page.
+- Filters events by category and other available criteria.
+- Opens an event to see its image, description, schedule, venue, registration fee, and related information.
+
+STUDENT / PARTICIPANT
+- Views a personal dashboard and event registrations.
+- Browses and registers for available events.
+- Uses a student wallet for event and accommodation charges.
+- Requests accommodation and checks whether a room has been assigned.
+- Uses hospitality services, submits feedback, views certificates, manages profile information, and browses event photographs.
+
+ADMINISTRATOR
+- Uses the administrative dashboard and analytics pages.
+- Creates, edits, and removes events.
+- Uploads an event-specific image that is displayed with that event in public and student event listings.
+- Manages departments, venues, participants, registrations, sponsors, publicity, accommodation, hospitality, evaluations, certificates, reports, and photographs.
+
+COORDINATOR
+- Signs in through the staff login and uses the Coordinator Portal for event coordination and assigned operational workflows.
+
+4. MAIN WORKFLOWS
+
+EVENT CREATION AND DISCOVERY
+1. An administrator opens Event Management and creates an event.
+2. The administrator enters the event details and selects a JPG, PNG, or WebP image (maximum 1 MB).
+3. The image is saved as part of that event record.
+4. Students and visitors see the same event-specific image on the relevant event cards and event detail page.
+5. On the event browsing page, category tiles take the user to the matching category section.
+
+EVENT REGISTRATION AND PAYMENT
+1. A student selects an event and submits registration details.
+2. The student continues to the event-specific checkout page.
+3. The event entry fee is Rs. 99.
+4. The fee is deducted from the student's wallet when payment is confirmed.
+5. The registration is recorded and appears in the student's registration list.
+
+STUDENT WALLET AND TEMPORARY TOP-UP
+- A student wallet starts with a default balance of Rs. 1,000 for a student account without a saved wallet balance.
+- The student enters a positive whole-rupee amount and generates a QR code.
+- The QR opens a mobile confirmation page showing the requested amount.
+- The student can choose Proceed or Reject. Only Proceed causes the wallet page to add the temporary amount; Reject leaves the balance unchanged.
+- This is a local demonstration flow. No bank, card, or payment provider is connected.
+
+ACCOMMODATION REQUEST AND PAYMENT
+1. The student selects check-in and check-out dates and submits a hostel request.
+2. The application calculates the stay as the number of nights between the dates, at Rs. 200 per day.
+3. The request remains unpaid while pending.
+4. After an administrator approves the request and assigns a room, the student can pay the calculated amount from the wallet.
+5. A successful wallet payment records the amount paid and updates the wallet balance.
+
+5. COMPLETENESS
+
+The prototype covers a broad event lifecycle rather than only event listing. It includes public pages, student workflows, administrative CRUD pages, registration tracking, accommodation assignment, hospitality, financial records, evaluation, certificates, reports, a gallery, and analytics.
+
+Completeness strengths:
+- Events have categories, schedules, descriptions, venues, fees, and individual images.
+- Students can browse, register, review registrations, and use wallet-based demo payments.
+- Accommodation estimates use the selected dates and apply the Rs. 200/day rate.
+- Administrators have separate management pages for many operational records.
+- The interface includes status indicators, search/filter controls, notifications, summaries, and confirmations.
+
+Completeness limitations:
+- The application uses mock data and browser localStorage rather than a persistent database server.
+- The wallet QR relay is an in-memory Vite development-server feature. Pending QR requests expire after 10 minutes and are lost if that server restarts.
+- Wallet balances stored in localStorage are browser-specific; they do not synchronize between devices through a database.
+- The wallet top-up and wallet payments are simulations. They do not process real money.
+- Authentication uses fixed project demo credentials in client-side code. It is not appropriate for production security.
+- Some role distinctions are represented in navigation but are not enforced as a complete authorization system.
+
+6. NOVELTY AND VALUE
+
+The project's contribution is the integration of several event-management workflows into one coherent prototype. Instead of treating event listings, participant registration, accommodation, hospitality, payment, feedback, and certificates as unrelated pages, it links them through the event and participant records.
+
+Useful demonstration ideas include:
+- Event-specific uploaded images carried from admin creation to student/public browsing.
+- Category-based event discovery for Technical, Non-Technical, and Fun Activity programs.
+- A wallet-based registration flow with visible balance changes.
+- QR-confirmed temporary wallet top-ups that demonstrate an explicit approve/reject step without a payment provider.
+- Accommodation pricing calculated from the student's requested dates and payable only after room assignment.
+
+This is application-level novelty and workflow integration. The project does not claim a new scientific algorithm or payment technology.
+
+7. TECHNOLOGY
+
+- React 18: component-based user interface.
+- Vite 5: development server and production bundler.
+- React Router DOM 6: navigation between public, student, and admin pages.
+- Tailwind CSS 3: responsive utility-based styling.
+- lucide-react: interface icons.
+- qrcode.react: QR-code rendering for temporary wallet top-up confirmation.
+- Browser localStorage: prototype persistence for application data and wallet balances.
+- Vite development middleware: temporary in-memory wallet top-up request relay for QR confirmation.
+
+The current repository does not include a production backend or database. A production version would need a backend API, a persistent database, server-side authorization, secure authentication, and a real payment integration if real money is ever accepted.
+
+8. PRESENTATION
+
+The interface uses an NIT Trichy-inspired institutional visual style with a consistent color palette, status badges, event imagery, responsive layouts, and separate public, student, and staff areas. Event cards provide a quick summary; event detail pages provide deeper information. Administrative data is presented using searchable tables and focused forms, while the student dashboard summarizes the student's own activity.
+
+For a project demonstration, a useful presentation sequence is:
+1. Introduce the event-management problem and the three user roles.
+2. Browse event categories and open an event with its event-specific image.
+3. Demonstrate registration and the wallet payment flow.
+4. Show an accommodation request, administrator room assignment, date-based fee, and student wallet payment.
+5. Show administrative event management, participant/registration management, and analytics.
+6. Explain the prototype limitations and how a real backend could replace localStorage and the temporary Vite relay.
+
+9. USABILITY
+
+- The public event page provides category tiles, filters, search, and sorting to help users find events.
+- Event-specific images help distinguish one event from another.
+- Student pages group registrations, wallet, accommodation, hospitality, profile, certificates, feedback, and gallery access.
+- The wallet displays its current balance and reports the result of a confirmed or rejected top-up.
+- Accommodation pages show days, rate, estimated total, room status, payment status, and wallet payment availability.
+- Admin pages use tables and forms to support repeated management tasks.
+- Responsive layouts adapt the main pages for desktop and mobile use.
+
+10. DEMO LOGIN INFORMATION
+
+Administrator:
+Email: admin@gmail.com
+Password: adminPass123
+
+Coordinator:
+Email: coordinator@example.com
+Password: demoPass123
+
+Student demo accounts:
+Email: prasad45@gmail.com
+Password: demoPass123
+
+Email: xyz@gmail.com
+Password: demoPass123
+
+These are fixed demonstration credentials. They are not real institutional accounts and must not be reused as production passwords.
+
+11. RUNNING THE PROJECT
+
+Prerequisites: Node.js 18 or later and npm.
+
+From the project directory:
+
+npm install
+npm run dev
+
+Vite prints the local development URL in the terminal. To create a production bundle:
+
+npm run build
+
+The production bundle is static frontend output; the temporary wallet QR relay only runs in the Vite development server.
+
+12. SUMMARY
+
+This project is a responsive event-management prototype that connects event discovery, participant registration, student services, and administrative operations. Its main value is demonstrating an end-to-end event lifecycle and the corresponding user experience. It is suitable for project presentation and demonstration, while real deployment would require persistent backend services and production-grade security.

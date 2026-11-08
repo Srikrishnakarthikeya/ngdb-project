@@ -1,0 +1,46 @@
+import mongoose from 'mongoose';
+const { Schema } = mongoose;
+const timestamps = { timestamps: true, versionKey: false };
+const idString = (required = true) => ({ type: String, required, trim: true });
+
+const DepartmentSchema = new Schema({ Dept_ID: idString(), Dept_Name: idString(), HOD_Name: String, Contact_Email: String, Contact_Phone: String, Description: String }, { ...timestamps, strict: true });
+const VenueSchema = new Schema({ Venue_ID: idString(), Venue_Name: idString(), Location: String, Capacity: Number, Venue_Type: String, Facilities: String }, { ...timestamps, strict: true });
+const CoordinatorSchema = new Schema({ Coordinator_ID: idString(), Name: idString(), Designation: String, Email: String, Contact: String, Role: String, Department: String, Specialization: String }, { ...timestamps, strict: true });
+const EventSchema = new Schema({ Event_ID: idString(), Event_Name: idString(), Event_Type: String, Start_Date: String, End_Date: String, Description: String, Budget: Number, Status: String, Dept_ID: String, Venue_ID: String, RegistrationFee: Number, MaxParticipants: Number, Banner: String, TargetAudience: String }, { ...timestamps, strict: true });
+const EventCoordinatorSchema = new Schema({ Event_ID: idString(), Coordinator_ID: idString(), Assigned_Role: String }, { ...timestamps, strict: true });
+const SponsorSchema = new Schema({ Sponsor_ID: idString(), Sponsor_Name: idString(), Contact: String, Amount_Contributed: Number, Event_ID: String, LogoUrl: String, Tier: String }, { ...timestamps, strict: true });
+const PublicitySchema = new Schema({ Ad_ID: idString(), Event_ID: String, Medium: String, Publish_Date: String, Reach_Count: Number, Content_Link: String, Status: String }, { ...timestamps, strict: true });
+const ParticipantSchema = new Schema({ Participant_ID: idString(), Name: idString(), Email: String, Phone: String, Category: String, Institution_Name: String, Branch: String, Year_of_Study: String, Roll_No: String, Avatar: String, Wallet: { type: Number, required: true, default: 1000, min: 0 } }, { ...timestamps, strict: true });
+const RegistrationSchema = new Schema({ Registration_ID: idString(), Participant_ID: String, Event_ID: String, Registration_Date: String, Fee_Paid: Number, Payment_Status: String, Registration_Type: String, Status: String, Payment_Method: String }, { ...timestamps, strict: true });
+const AccommodationSchema = new Schema({ Accommodation_ID: idString(), Participant_ID: String, Room_No: String, Hostel_Block: String, Check_in_Date: String, Check_out_Date: String, Status: String, Notes: String, Payment_Status: String, Fee_Paid: Number }, { ...timestamps, strict: true });
+const HospitalitySchema = new Schema({ Hospitality_ID: idString(), Participant_ID: String, Event_ID: String, Meal_Type: String, Date: String, Transport_Provided: String }, { ...timestamps, strict: true });
+const EvaluationSchema = new Schema({ Evaluation_ID: idString(), Participant_ID: String, Event_ID: String, Evaluator_ID: String, Score: Number, RatingCategories: Schema.Types.Mixed, Feedback: String, Evaluation_Date: String }, { ...timestamps, strict: true });
+const CertificateSchema = new Schema({ Certificate_ID: idString(), Participant_ID: String, Event_ID: String, Certificate_Type: String, Issue_Date: String, Certificate_No: String, Title: String, IssuedBy: String }, { ...timestamps, strict: true });
+const CompletionReportSchema = new Schema({ Report_ID: idString(), Event_ID: String, Prepared_By: String, Report_Date: String, Summary: String, No_of_Participants: Number, KeyOutcomes: [String], FinancialSummary: Schema.Types.Mixed }, { ...timestamps, strict: true });
+const PhotographSchema = new Schema({ Photo_ID: idString(), Report_ID: String, Photo_URL: String, Caption: String, Uploaded_Date: String }, { ...timestamps, strict: true });
+const NotificationSchema = new Schema({ id: idString(), recipient: String, title: String, message: String, time: String, read: Boolean, type: String }, { ...timestamps, strict: true });
+
+const model = (name, schema, collection) => mongoose.models[name] || mongoose.model(name, schema, collection);
+export const Department = model('Department', DepartmentSchema, 'departments');
+export const Venue = model('Venue', VenueSchema, 'venues');
+export const Coordinator = model('Coordinator', CoordinatorSchema, 'coordinators');
+export const Event = model('Event', EventSchema, 'events');
+export const EventCoordinator = model('EventCoordinator', EventCoordinatorSchema, 'eventCoordinators');
+export const Sponsor = model('Sponsor', SponsorSchema, 'sponsors');
+export const Publicity = model('Publicity', PublicitySchema, 'publicity');
+export const Participant = model('Participant', ParticipantSchema, 'participants');
+export const Registration = model('Registration', RegistrationSchema, 'registrations');
+export const Accommodation = model('Accommodation', AccommodationSchema, 'accommodations');
+export const Hospitality = model('Hospitality', HospitalitySchema, 'hospitality');
+export const Evaluation = model('Evaluation', EvaluationSchema, 'evaluations');
+export const Certificate = model('Certificate', CertificateSchema, 'certificates');
+export const CompletionReport = model('CompletionReport', CompletionReportSchema, 'completionReports');
+export const Photograph = model('Photograph', PhotographSchema, 'photographs');
+export const Notification = model('Notification', NotificationSchema, 'notifications');
+
+const UserSchema = new Schema({ userId: idString(), name: idString(), email: { type: String, required: true, unique: true, lowercase: true, trim: true }, passwordHash: idString(), role: { type: String, enum: ['STUDENT', 'ADMIN', 'COORDINATOR'], required: true }, profile: { type: Schema.Types.Mixed, default: {} } }, timestamps);
+const WalletSchema = new Schema({ participantId: idString(), balance: { type: Number, required: true, default: 1000, min: 0 } }, timestamps);
+const WalletTopUpSchema = new Schema({ participantId: idString(), amount: { type: Number, required: true, min: 1 }, status: { type: String, enum: ['pending', 'confirmed', 'rejected', 'completed'], default: 'pending' }, expiresAt: { type: Date, required: true } }, timestamps);
+export const User = model('User', UserSchema, 'users');
+export const Wallet = model('Wallet', WalletSchema, 'wallets');
+export const WalletTopUp = model('WalletTopUp', WalletTopUpSchema, 'walletTopUps');
