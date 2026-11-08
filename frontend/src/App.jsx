@@ -1,5 +1,6 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
+import { useAuth } from './context/AuthContext';
 
 // Layouts
 import PublicLayout from './components/layout/PublicLayout';
@@ -49,6 +50,11 @@ import AnalyticsPage from './pages/admin/AnalyticsPage';
 import ChangePasswordPage from './pages/admin/ChangePasswordPage';
 import CoordinatorDashboardPage from './pages/admin/CoordinatorDashboardPage';
 
+const ParticipantPaymentRoute = () => {
+  const { isCoordinator } = useAuth();
+  return isCoordinator ? <Navigate to="/events" replace /> : <EventPaymentPage />;
+};
+
 function App() {
   return (
     <Routes>
@@ -57,7 +63,7 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/events" element={<PublicEventsPage />} />
         <Route path="/events/:id" element={<PublicEventDetailPage />} />
-        <Route path="/events/:id/payment" element={<EventPaymentPage />} />
+        <Route path="/events/:id/payment" element={<ParticipantPaymentRoute />} />
         <Route path="/gallery" element={<StudentGalleryPage />} />
         <Route path="/about" element={<AboutPage />} />
         <Route path="/contact" element={<ContactPage />} />
@@ -73,7 +79,7 @@ function App() {
         <Route path="wallet" element={<StudentWalletPage />} />
         <Route path="events" element={<PublicEventsPage />} />
         <Route path="events/:id" element={<PublicEventDetailPage />} />
-        <Route path="events/:id/payment" element={<EventPaymentPage />} />
+        <Route path="events/:id/payment" element={<ParticipantPaymentRoute />} />
         <Route path="registrations" element={<MyRegistrationsPage />} />
         <Route path="profile" element={<StudentProfilePage />} />
         <Route path="accommodation" element={<StudentAccommodationPage />} />

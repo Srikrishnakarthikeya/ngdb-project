@@ -151,7 +151,7 @@ const Navbar = () => {
                         {/* Quick Dashboard link */}
                         <div className="py-1">
                           <Link
-                            to={isStudent ? '/student/dashboard' : '/admin/dashboard'}
+                            to={isStudent ? '/student/dashboard' : isCoordinator ? '/admin/coordinator-dashboard' : '/admin/dashboard'}
                             onClick={() => setIsRoleDropdownOpen(false)}
                             className="flex items-center gap-2 px-4 py-2 text-xs font-semibold text-nitt-900 hover:bg-slate-50"
                           >

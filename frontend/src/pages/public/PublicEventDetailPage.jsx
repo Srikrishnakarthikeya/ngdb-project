@@ -25,7 +25,7 @@ import {
 const PublicEventDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { currentUser, isAuthenticated, isStudent, switchRole } = useAuth();
+  const { currentUser, isAuthenticated, isStudent, isCoordinator, switchRole } = useAuth();
   const {
     getEvent,
     getDepartment,
@@ -74,6 +74,7 @@ const PublicEventDetailPage = () => {
   const availableCapacity = (venue?.Capacity || 100) - registrations.length;
 
   const handleOpenRegister = () => {
+    if (isCoordinator) return;
     // If user is not authenticated, switch to student or guide
     if (!isAuthenticated) {
       switchRole('STUDENT');
@@ -336,16 +337,22 @@ const PublicEventDetailPage = () => {
               </div>
             </div>
 
-            {/* Register CTA Button */}
+            {/* Participant-only registration action */}
             <div className="pt-2">
-              <Button
-                variant="primary"
-                size="lg"
-                className="w-full font-bold shadow-md bg-nitt-900 hover:bg-nitt-800"
-                onClick={handleOpenRegister}
-              >
-                REGISTER NOW
-              </Button>
+              {isCoordinator ? (
+                <div className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-3 text-center text-xs font-bold text-amber-800">
+                  Coordinator access is read-only. Event participation is not allowed.
+                </div>
+              ) : (
+                <Button
+                  variant="primary"
+                  size="lg"
+                  className="w-full font-bold shadow-md bg-nitt-900 hover:bg-nitt-800"
+                  onClick={handleOpenRegister}
+                >
+                  REGISTER NOW
+                </Button>
+              )}
             </div>
 
           </div>

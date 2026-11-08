@@ -2,6 +2,7 @@ import express from 'express';
 import bcrypt from 'bcryptjs';
 import nodemailer from 'nodemailer';
 import { create, find, findOne, update, remove, writeCollection } from '../storage/jsonStore.js';
+import { requireAdmin } from '../middleware/auth.js';
 
 const router = express.Router();
 
@@ -17,23 +18,27 @@ const syncAssignedEvents = async () => {
 };
 
 const sendCredentials = async ({ name, email, userName, password }) => {
-  if (!process.env.SMTP_HOST || !process.env.SMTP_USER || !process.env.SMTP_PASS) return { sent: false, reason: 'SMTP credentials are not configured' };
+  if (!process.env.SMTP_HOST || !process.env.SMTP_USER || !process.env.SMTP_PASS) {
+    console.warn('[Coordinator Email] SMTP credentials are not configured; no email was sent.');
+    return { sent: false, reason: 'SMTP credentials are not configured' };
+  }
   const transporter = nodemailer.createTransport({
     host: process.env.SMTP_HOST,
     port: Number(process.env.SMTP_PORT || 587),
     secure: String(process.env.SMTP_SECURE || 'false') === 'true',
     auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS }
   });
-  await transporter.sendMail({
+  const info = await transporter.sendMail({
     from: process.env.SMTP_FROM || process.env.SMTP_USER,
     to: email,
     subject: 'Your NIT Trichy coordinator account',
     text: `Hello ${name},\n\nYour coordinator account has been created.\nUsername/email: ${userName}\nDefault password: ${password}\n\nPlease login and change your password immediately.\n`
   });
-  return { sent: true };
+  console.log(`[Coordinator Email] Successfully sent credentials to ${email}. Message ID: ${info.messageId || 'not-provided'}`);
+  return { sent: true, messageId: info.messageId || null };
 };
 
-router.post('/coordinator-management', async (req, res, next) => {
+router.post('/coordinator-management', requireAdmin, async (req, res, next) => {
   try {
     const { Name, Email, UserName, Contact, Designation, Role, Department, Specialization } = req.body;
     const email = String(Email || '').trim().toLowerCase();
@@ -63,15 +68,22 @@ router.post('/coordinator-management', async (req, res, next) => {
       profile: { designation: Designation || 'Coordinator', department: Department || 'DEPT-CA', assignedEvents: [] }
     });
 
+    console.log(`[Development Coordinator Account] ${Name} | Username/email: ${userName} | Default password: ${password}`);
     let emailResult;
     try { emailResult = await sendCredentials({ name: Name, email, userName, password }); }
-    catch (error) { emailResult = { sent: false, reason: error.message }; }
+    catch (error) {
+      console.error(`[Coordinator Email] Failed to send credentials to ${email}`);
+      console.error(`[Coordinator Email] Error code: ${error.code || 'UNKNOWN'}`);
+      console.error(`[Coordinator Email] Error: ${error.message || String(error)}`);
+      if (error.response) console.error(`[Coordinator Email] Server response: ${error.response}`);
+      emailResult = { sent: false, reason: error.message };
+    }
 
     res.status(201).json({ coordinator, defaultPassword: password, emailResult });
   } catch (error) { next(error); }
 });
 
-router.put('/coordinator-management/:id', async (req, res, next) => {
+router.put('/coordinator-management/:id', requireAdmin, async (req, res, next) => {
   try {
     const coordinatorId = decodeURIComponent(req.params.id);
     const coordinator = await update('coordinators', 'Coordinator_ID', coordinatorId, req.body);
@@ -83,7 +95,7 @@ router.put('/coordinator-management/:id', async (req, res, next) => {
   } catch (error) { next(error); }
 });
 
-router.delete('/coordinator-management/:id', async (req, res, next) => {
+router.delete('/coordinator-management/:id', requireAdmin, async (req, res, next) => {
   try {
     const coordinatorId = decodeURIComponent(req.params.id);
     const coordinatorsDeleted = await remove('coordinators', 'Coordinator_ID', coordinatorId);
@@ -95,7 +107,7 @@ router.delete('/coordinator-management/:id', async (req, res, next) => {
   } catch (error) { next(error); }
 });
 
-router.post('/event-coordinators', async (req, res, next) => {
+router.post('/event-coordinators', requireAdmin, async (req, res, next) => {
   try {
     const { Event_ID, Coordinator_ID, Assigned_Role } = req.body;
     if (!Event_ID || !Coordinator_ID) return res.status(400).json({ error: 'Event and coordinator are required.' });
@@ -107,7 +119,7 @@ router.post('/event-coordinators', async (req, res, next) => {
   } catch (error) { next(error); }
 });
 
-router.delete('/event-coordinators/:eventId/:coordinatorId', async (req, res, next) => {
+router.delete('/event-coordinators/:eventId/:coordinatorId', requireAdmin, async (req, res, next) => {
   try {
     const assignments = await find('eventCoordinators', {});
     const eventId = decodeURIComponent(req.params.eventId);

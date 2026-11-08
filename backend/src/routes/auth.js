@@ -2,6 +2,7 @@ import express from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { findOne, find, create, update } from '../storage/jsonStore.js';
+import { authenticate } from '../middleware/auth.js';
 
 const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET || 'development-only-change-me';
@@ -48,9 +49,10 @@ router.post('/staff/login', async (req, res, next) => {
   } catch (error) { next(error); }
 });
 
-router.post('/change-password', async (req, res, next) => {
+router.post('/change-password', authenticate, async (req, res, next) => {
   try {
-    const { userId, currentPassword, newPassword } = req.body;
+    const userId = req.user.sub;
+    const { currentPassword, newPassword } = req.body;
     if (!userId || !currentPassword || !newPassword) return res.status(400).json({ error: 'User, current password and new password are required.' });
     if (String(newPassword).length < 8) return res.status(400).json({ error: 'New password must be at least 8 characters.' });
     const user = await findOne('users', { userId });

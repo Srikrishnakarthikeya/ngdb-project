@@ -19,7 +19,7 @@ const ChangePasswordPage = () => {
     const result = await changePassword(currentPassword, newPassword);
     if (!result.success) { setError(result.error); return; }
     showToast('Password changed successfully.', 'success');
-    navigate('/admin/dashboard', { replace: true });
+    navigate(isCoordinator ? '/admin/coordinator-dashboard' : '/admin/dashboard', { replace: true });
   };
 
   return <main className="mx-auto max-w-md rounded-xl border border-slate-200 bg-white p-6 shadow-sm">

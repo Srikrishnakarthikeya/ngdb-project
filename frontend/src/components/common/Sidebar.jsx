@@ -164,8 +164,31 @@ const Sidebar = ({ isMobileOpen, setIsMobileOpen }) => {
             </div>
           )}
 
+          {/* COORDINATOR MENU */}
+          {isCoordinator && (
+            <div className="space-y-4">
+              <div className="space-y-1">
+                <span className="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-2">
+                  Coordinator Workspace
+                </span>
+                <NavLink to="/admin/coordinator-dashboard" className={navItemClass}>
+                  <LayoutDashboard className="w-4 h-4 text-blue-600" />
+                  <span>My Assigned Events</span>
+                </NavLink>
+                <NavLink to="/events" className={navItemClass}>
+                  <Calendar className="w-4 h-4 text-indigo-600" />
+                  <span>Browse All Events</span>
+                </NavLink>
+                <NavLink to="/admin/change-password" className={navItemClass}>
+                  <Shield className="w-4 h-4 text-amber-600" />
+                  <span>Change Password</span>
+                </NavLink>
+              </div>
+            </div>
+          )}
+
           {/* ADMIN MENU */}
-          {(isAdmin || isCoordinator) && (
+          {isAdmin && (
             <div className="space-y-4">
               {/* Core Analytics */}
               <div className="space-y-1">
