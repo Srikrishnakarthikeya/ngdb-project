@@ -5,6 +5,7 @@ import authRoutes from './routes/auth.js';
 import apiRoutes from './routes/api.js';
 import walletRoutes from './routes/wallet.js';
 import coordinatorRoutes from './routes/coordinator.js';
+import volunteerRoutes from './routes/volunteer.js';
 
 const app = express();
 const port = Number(process.env.PORT || 5000);
@@ -14,6 +15,7 @@ app.get('/api/health', (_req, res) => res.json({ status: 'ok', storage: 'json-fi
 app.use('/api/auth', authRoutes);
 app.use('/api', walletRoutes);
 app.use('/api', coordinatorRoutes);
+app.use('/api', volunteerRoutes);
 app.use('/api', apiRoutes);
 app.use((error, _req, res, _next) => {
   console.error(error);

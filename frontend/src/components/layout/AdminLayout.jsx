@@ -14,6 +14,10 @@ const AdminLayout = () => {
     return <Navigate to="/admin-login" replace state={{ from: location }} />;
   }
 
+  if (isCoordinator && !['/admin/coordinator-dashboard', '/admin/change-password'].includes(location.pathname)) {
+    return <Navigate to="/admin/coordinator-dashboard" replace />;
+  }
+
   const requestRoleLogin = (role) => {
     logout();
     navigate(`/admin-login?role=${role}`);

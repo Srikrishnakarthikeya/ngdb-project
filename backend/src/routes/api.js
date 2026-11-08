@@ -1,6 +1,7 @@
 import express from 'express';
 import { ER_ENTITIES } from '../data/erModelInfo.js';
 import { readCollection, find, create, update, remove } from '../storage/jsonStore.js';
+import { requireDataMutation } from '../middleware/auth.js';
 
 const router = express.Router();
 router.get('/schema/er-model', (_req, res) => res.json(ER_ENTITIES));
@@ -10,13 +11,13 @@ const resources = {
   eventCoordinators: 'eventCoordinators', sponsors: 'sponsors', publicity: 'publicity', participants: 'participants',
   registrations: 'registrations', accommodations: 'accommodations', hospitality: 'hospitality', evaluations: 'evaluations',
   certificates: 'certificates', completionReports: 'completionReports', photographs: 'photographs', notifications: 'notifications',
-  wallets: 'wallets', users: 'users', walletTopUps: 'walletTopUps'
+  wallets: 'wallets', users: 'users', walletTopUps: 'walletTopUps', volunteerApplications: 'volunteerApplications'
 };
 const idFields = {
   departments: 'Dept_ID', venues: 'Venue_ID', coordinators: 'Coordinator_ID', events: 'Event_ID', eventCoordinators: null,
   sponsors: 'Sponsor_ID', publicity: 'Ad_ID', participants: 'Participant_ID', registrations: 'Registration_ID',
   accommodations: 'Accommodation_ID', hospitality: 'Hospitality_ID', evaluations: 'Evaluation_ID', certificates: 'Certificate_ID',
-  completionReports: 'Report_ID', photographs: 'Photo_ID', notifications: 'id', wallets: 'participantId', users: 'userId', walletTopUps: null
+  completionReports: 'Report_ID', photographs: 'Photo_ID', notifications: 'id', wallets: 'participantId', users: 'userId', walletTopUps: null, volunteerApplications: 'applicationId'
 };
 
 router.get('/bootstrap', async (_req, res, next) => {
@@ -30,15 +31,15 @@ router.get('/bootstrap', async (_req, res, next) => {
 for (const [name, collection] of Object.entries(resources)) {
   const idField = idFields[name];
   router.get(`/${name}`, async (req, res, next) => { try { res.json(await find(collection, req.query)); } catch (error) { next(error); } });
-  router.post(`/${name}`, async (req, res, next) => { try { res.status(201).json(await create(collection, req.body)); } catch (error) { next(error); } });
-  router.put(`/${name}/:value`, async (req, res, next) => {
+  router.post(`/${name}`, requireDataMutation, async (req, res, next) => { try { res.status(201).json(await create(collection, req.body)); } catch (error) { next(error); } });
+  router.put(`/${name}/:value`, requireDataMutation, async (req, res, next) => {
     try {
       const value = await update(collection, idField, decodeURIComponent(req.params.value), req.body);
       if (!value) return res.status(404).json({ error: `${name} not found` });
       res.json(value);
     } catch (error) { next(error); }
   });
-  router.delete(`/${name}/:value`, async (req, res, next) => {
+  router.delete(`/${name}/:value`, requireDataMutation, async (req, res, next) => {
     try {
       const deleted = await remove(collection, idField, decodeURIComponent(req.params.value));
       if (!deleted) return res.status(404).json({ error: `${name} not found` });

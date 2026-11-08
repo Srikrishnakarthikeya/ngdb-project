@@ -1,5 +1,6 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
+import { useAuth } from './context/AuthContext';
 
 // Layouts
 import PublicLayout from './components/layout/PublicLayout';
@@ -16,6 +17,8 @@ import WalletTopUpConfirmationPage from './pages/public/WalletTopUpConfirmationP
 import AdminLoginPage from './pages/public/AdminLoginPage';
 import AboutPage from './pages/public/AboutPage';
 import ContactPage from './pages/public/ContactPage';
+import VolunteerLoginPage from './pages/public/VolunteerLoginPage';
+import VolunteerDashboardPage from './pages/volunteer/VolunteerDashboardPage';
 
 // Student Pages
 import StudentDashboard from './pages/student/StudentDashboard';
@@ -49,6 +52,16 @@ import AnalyticsPage from './pages/admin/AnalyticsPage';
 import ChangePasswordPage from './pages/admin/ChangePasswordPage';
 import CoordinatorDashboardPage from './pages/admin/CoordinatorDashboardPage';
 
+const ParticipantPaymentRoute = () => {
+  const { isCoordinator, isVolunteer } = useAuth();
+  return isCoordinator || isVolunteer ? <Navigate to="/events" replace /> : <EventPaymentPage />;
+};
+
+const VolunteerRoute = () => {
+  const { isVolunteer } = useAuth();
+  return isVolunteer ? <VolunteerDashboardPage /> : <Navigate to="/volunteer-login" replace />;
+};
+
 function App() {
   return (
     <Routes>
@@ -57,13 +70,15 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/events" element={<PublicEventsPage />} />
         <Route path="/events/:id" element={<PublicEventDetailPage />} />
-        <Route path="/events/:id/payment" element={<EventPaymentPage />} />
+        <Route path="/events/:id/payment" element={<ParticipantPaymentRoute />} />
         <Route path="/gallery" element={<StudentGalleryPage />} />
         <Route path="/about" element={<AboutPage />} />
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/student-login" element={<StudentLoginPage />} />
         <Route path="/wallet/confirm" element={<WalletTopUpConfirmationPage />} />
         <Route path="/admin-login" element={<AdminLoginPage />} />
+        <Route path="/volunteer-login" element={<VolunteerLoginPage />} />
+        <Route path="/volunteer/dashboard" element={<VolunteerRoute />} />
       </Route>
 
       {/* Student Portal Pages */}
@@ -73,7 +88,7 @@ function App() {
         <Route path="wallet" element={<StudentWalletPage />} />
         <Route path="events" element={<PublicEventsPage />} />
         <Route path="events/:id" element={<PublicEventDetailPage />} />
-        <Route path="events/:id/payment" element={<EventPaymentPage />} />
+        <Route path="events/:id/payment" element={<ParticipantPaymentRoute />} />
         <Route path="registrations" element={<MyRegistrationsPage />} />
         <Route path="profile" element={<StudentProfilePage />} />
         <Route path="accommodation" element={<StudentAccommodationPage />} />

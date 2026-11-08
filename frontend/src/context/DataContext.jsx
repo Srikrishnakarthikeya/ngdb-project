@@ -7,7 +7,7 @@ const request = async (path, options = {}) => {
   try {
     response = await fetch(`${API_PREFIX}${path}`, {
       ...options,
-      headers: { 'Content-Type': 'application/json', ...(options.headers || {}) },
+      headers: { 'Content-Type': 'application/json', ...(localStorage.getItem('nitt_ca_auth_token') ? { Authorization: `Bearer ${localStorage.getItem('nitt_ca_auth_token')}` } : {}), ...(options.headers || {}) },
       body: options.body ? JSON.stringify(options.body) : undefined
     });
   } catch {

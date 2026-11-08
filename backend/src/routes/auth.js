@@ -2,6 +2,7 @@ import express from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { findOne, find, create, update } from '../storage/jsonStore.js';
+import { authenticate } from '../middleware/auth.js';
 
 const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET || 'development-only-change-me';
@@ -23,6 +24,31 @@ router.post('/student/register', async (req, res, next) => {
     await create('participants', { Participant_ID: userId, Name: name.trim(), Email: normalizedEmail, Phone: phone || '', Category: 'Student', Institution_Name: institution || '', Branch: '', Year_of_Study: '', Roll_No: '', Wallet: 1000 });
     await create('wallets', { participantId: userId, balance: 1000 });
     res.status(201).json({ token: sign(user), user: publicUser(user) });
+  } catch (error) { next(error); }
+});
+
+router.post('/volunteer/register', async (req, res, next) => {
+  try {
+    const { name, email, phone, institution, password } = req.body;
+    if (!name || !email || !password) return res.status(400).json({ error: 'Name, email and password are required.' });
+    const normalizedEmail = String(email).trim().toLowerCase();
+    const users = await find('users', {});
+    if (users.some((user) => String(user.email || '').toLowerCase() === normalizedEmail)) return res.status(409).json({ error: 'An account already exists with this email.' });
+    const userId = `VOL-${String(Date.now()).slice(-6)}`;
+    const passwordHash = await bcrypt.hash(password, 10);
+    const user = await create('users', { userId, name: String(name).trim(), email: normalizedEmail, passwordHash, role: 'VOLUNTEER', profile: { phone: phone || '', institution: institution || '' } });
+    res.status(201).json({ token: sign(user), user: publicUser(user) });
+  } catch (error) { next(error); }
+});
+
+router.post('/volunteer/login', async (req, res, next) => {
+  try {
+    const identifier = String(req.body.identifier || req.body.email || '').trim().toLowerCase();
+    if (!identifier || !req.body.password) return res.status(400).json({ error: 'Email/ID and password are required.' });
+    const users = await find('users', { role: 'VOLUNTEER' });
+    const user = users.find((item) => item.email?.toLowerCase() === identifier || item.userId?.toLowerCase() === identifier);
+    if (!user || !(await bcrypt.compare(req.body.password, user.passwordHash))) return res.status(401).json({ error: 'Incorrect email/ID or password.' });
+    res.json({ token: sign(user), user: publicUser(user) });
   } catch (error) { next(error); }
 });
 
@@ -48,9 +74,10 @@ router.post('/staff/login', async (req, res, next) => {
   } catch (error) { next(error); }
 });
 
-router.post('/change-password', async (req, res, next) => {
+router.post('/change-password', authenticate, async (req, res, next) => {
   try {
-    const { userId, currentPassword, newPassword } = req.body;
+    const userId = req.user.sub;
+    const { currentPassword, newPassword } = req.body;
     if (!userId || !currentPassword || !newPassword) return res.status(400).json({ error: 'User, current password and new password are required.' });
     if (String(newPassword).length < 8) return res.status(400).json({ error: 'New password must be at least 8 characters.' });
     const user = await findOne('users', { userId });
